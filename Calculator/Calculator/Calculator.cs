@@ -8,27 +8,34 @@ namespace Calculator
 {
     public class Calculator
     {
+        private StringValidator validator;
+
         public Calculator()
         {
-            
+            validator = new StringValidator();
         }
 
-        public string Add()
+        public string Calculate(string operationString)
         {
             return "";
         }
 
-        public string Substract()
+        private string Add()
         {
             return "";
         }
 
-        public string Multiply()
+        private string Substract()
         {
             return "";
         }
 
-        public string Divide()
+        private string Multiply()
+        {
+            return "";
+        }
+
+        private string Divide()
         {
             return "";
         }

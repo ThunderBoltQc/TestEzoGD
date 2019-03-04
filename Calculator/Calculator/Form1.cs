@@ -13,7 +13,6 @@ namespace Calculator
     public partial class frmCalculator : Form
     {
         private Calculator calc;
-        private StringValidator validator;
 
         public frmCalculator()
         {
@@ -22,7 +21,6 @@ namespace Calculator
 
         private void frmCalculator_Load(object sender, EventArgs e)
         {
-            validator = new StringValidator();
             calc = new Calculator();
         }
 
@@ -32,7 +30,7 @@ namespace Calculator
 
             input = input.Replace(" ", String.Empty);
 
-
+            calc.Calculate(input);
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
