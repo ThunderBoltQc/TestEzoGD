@@ -30,7 +30,9 @@ namespace Calculator
 
             input = input.Replace(" ", String.Empty);
 
-            calc.Calculate(input);
+            string answer = calc.Calculate(input);
+
+            txtResult.Text = answer;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

@@ -8,6 +8,9 @@ namespace Calculator
 {
     public class StringValidator
     {
+        private const int MIN_ASCII_NUMBER = 48;
+        private const int MAX_ASCII_NUMBER = 57;
+
         public StringValidator()
         {
 
@@ -54,7 +57,7 @@ namespace Calculator
 
         private bool IsNumber(char caracter)
         {
-            if (caracter < 48 || caracter > 57)
+            if (caracter < MIN_ASCII_NUMBER || caracter > MAX_ASCII_NUMBER)
             {
                 return false;
             }
@@ -77,4 +80,4 @@ namespace Calculator
         }
     }
 }
-}
+
