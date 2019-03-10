@@ -13,12 +13,22 @@ namespace Calculator
 
         public StringValidator()
         {
-
+            
         }
 
         public bool Validate(string input)
         {
             if (!ValidateFirstCaracter(input))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool IsNumber(char caracter)
+        {
+            if (caracter < MIN_ASCII_NUMBER || caracter > MAX_ASCII_NUMBER)
             {
                 return false;
             }
@@ -55,15 +65,7 @@ namespace Calculator
             return true;
         }
 
-        private bool IsNumber(char caracter)
-        {
-            if (caracter < MIN_ASCII_NUMBER || caracter > MAX_ASCII_NUMBER)
-            {
-                return false;
-            }
-
-            return true;
-        }
+        
 
         private bool IsNumber(string input)
         {
