@@ -9,11 +9,15 @@ namespace Calculator
     public class Calculator
     {
         private StringValidator validator;
-        private char ADDITION_SIGN = '+';
-        private char SUBSTRACTION_SIGN = '-';
-        private char MULTIPLICATION_SIGN = '*';
-        private char DIVISION_SIGN = '/';
+        private const char ADDITION_SIGN = '+';
+        private const char SUBSTRACTION_SIGN = '-';
+        private const char MULTIPLICATION_SIGN = '*';
+        private const char DIVISION_SIGN = '/';
 
+        private const string ERROR_MESSAGE = "ERREUR !";
+
+
+        #region Public Methods
         public Calculator()
         {
             validator = new StringValidator();
@@ -24,14 +28,21 @@ namespace Calculator
             // 1. Find parantheses
             // 2. Powers
             // 3. Multiplications / Divisions
-            // 4. Additions / Substractions
+            operationString = DoAllMultiplcationsDivisions(operationString);
 
+            if (operationString.Contains(ERROR_MESSAGE))
+            {
+                return ERROR_MESSAGE;
+            }
+
+            // 4. Additions / Substractions
             string answer = DoAdditionsSubstractions(operationString);
 
             return answer;
         }
+        #endregion
 
-
+        #region Private Methods
         private string Add(string addition)
         {
             string[] numbers = addition.Split(ADDITION_SIGN);
@@ -49,34 +60,9 @@ namespace Calculator
         }
 
         private string Substract(string substraction)
-        {
-            // To put in another function
-
-            int middleSignPos = 0;
-            bool needToAddBack = false;
-
-            middleSignPos = substraction.Find(SUBSTRACTION_SIGN, false);
-
-            if (middleSignPos == 0)
-            {
-                needToAddBack = true;
-                substraction = substraction.Remove(0, 1);
-            }
-
-            middleSignPos = substraction.Find(SUBSTRACTION_SIGN, false);
-
-            string[] numbers = new string[2];
-
-            numbers[0] = substraction.Substring(0, middleSignPos);
-            numbers[1] = substraction.Substring(middleSignPos + 1, (substraction.Length - numbers[0].Length) - 1);
-
-            if (needToAddBack)
-            {
-                numbers[0] = "-" + numbers[0];
-            }
-
-            // End
-
+        {           
+            string[] numbers = GetNumbers(substraction);
+                  
             float difference = float.Parse(numbers[0]) - float.Parse(numbers[1]);
             return difference.ToString();
         }
@@ -103,13 +89,41 @@ namespace Calculator
 
             if (numbers[1] == "0")
             {
-                return "ERREUR !";
+                return ERROR_MESSAGE;
             }
 
             
             float sum = float.Parse(numbers[0]) / float.Parse(numbers[1]);
             return sum.ToString();
             
+        }
+
+        private string[] GetNumbers(string substraction)
+        {
+            int middleSignPos = 0;
+            bool needToAddBack = false;
+
+            middleSignPos = substraction.Find(SUBSTRACTION_SIGN, false);
+
+            if (middleSignPos == 0)
+            {
+                needToAddBack = true;
+                substraction = substraction.Remove(0, 1);
+            }
+
+            middleSignPos = substraction.Find(SUBSTRACTION_SIGN, false);
+
+            string[] numbers = new string[2];
+
+            numbers[0] = substraction.Substring(0, middleSignPos);
+            numbers[1] = substraction.Substring(middleSignPos + 1, (substraction.Length - numbers[0].Length) - 1);
+
+            if (needToAddBack)
+            {
+                numbers[0] = "-" + numbers[0];
+            }
+
+            return numbers;
         }
 
         private bool IsFloatNumber(ref string number)
@@ -225,5 +239,97 @@ namespace Calculator
 
             return -1;
         }
+
+        private bool IsOperator(char character)
+        {
+            if (character == MULTIPLICATION_SIGN|| character == ADDITION_SIGN || character == DIVISION_SIGN)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private string DoAllMultiplcationsDivisions(string operationString)
+        {
+            int firstIndex = FindFirstMulDivOperator(operationString);
+
+            while (firstIndex != -1)
+            {  
+                int operationStart = FindNextOrPreviousOperatorIndex(operationString, firstIndex, true); // = GetOperationStart(operationString);
+                int operationEnd = FindNextOrPreviousOperatorIndex(operationString, firstIndex, false); // = GetOperationEnd(operationString);
+
+                string operation = operationString.Substring(operationStart, (operationEnd - operationStart) + 1);
+
+                if (operation.Contains(MULTIPLICATION_SIGN.ToString()))
+                {
+                    operationString = operationString.Replace(operation, Multiply(operation));
+                }
+                else
+                {
+                    operationString = operationString.Replace(operation, Divide(operation));
+                }
+
+                firstIndex = FindFirstMulDivOperator(operationString);
+            }
+
+            return operationString;
+        }
+
+        private int GetMultiplicationDivisionCount(string operationString)
+        {
+            int count = 0;
+
+            for (int i = 0; i < operationString.Length; i++)
+            {
+                if (operationString[i] == MULTIPLICATION_SIGN || operationString[i] == DIVISION_SIGN)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private int FindFirstMulDivOperator(string operationString)
+        {
+            for (int i = 0; i < operationString.Length; i++)
+            {
+                if (operationString[i] == MULTIPLICATION_SIGN || operationString[i] == DIVISION_SIGN)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private int FindNextOrPreviousOperatorIndex(string operationString, int startPoint, bool goBackwards)
+        {
+            if (goBackwards)
+            {
+                for (int i = startPoint - 1; i >= 0; i--)
+                {
+                    if (IsOperator(operationString[i]) || IsMinusAnOperator(operationString, i))
+                    {
+                        return i + 1;
+                    }  
+                }
+
+                return 0;
+            }
+            else
+            {
+                for (int i = startPoint + 1; i < operationString.Length; i++)
+                {
+                    if (IsOperator(operationString[i]) || IsMinusAnOperator(operationString, i))
+                    {
+                        return i - 1;
+                    } 
+                }
+
+                return operationString.Length - 1;
+            }
+        }
+        #endregion
     }
 }
